@@ -64,8 +64,7 @@ class BaseAuthenticator(object):
             )
         if implicit and duration != "temporary":
             raise InvalidInvocation(
-                "The implicit grant flow only supports "
-                "temporary access tokens."
+                "The implicit grant flow only supports temporary access tokens."
             )
 
         params = {
@@ -113,9 +112,7 @@ class TrustedAuthenticator(BaseAuthenticator):
             ``Authorizer`` class.
 
         """
-        super(TrustedAuthenticator, self).__init__(
-            requestor, client_id, redirect_uri
-        )
+        super(TrustedAuthenticator, self).__init__(requestor, client_id, redirect_uri)
         self.client_secret = client_secret
 
     def _auth(self):
@@ -148,9 +145,7 @@ class BaseAuthorizer(object):
         self.scopes = None
 
     def _request_token(self, **data):
-        url = (
-            self._authenticator._requestor.reddit_url + const.ACCESS_TOKEN_PATH
-        )
+        url = self._authenticator._requestor.reddit_url + const.ACCESS_TOKEN_PATH
         pre_request_time = time.time()
         response = self._authenticator._post(url, **data)
         payload = response.json()
@@ -159,9 +154,7 @@ class BaseAuthorizer(object):
                 response, payload["error"], payload.get("error_description")
             )
 
-        self._expiration_timestamp = (
-            pre_request_time - 10 + payload["expires_in"]
-        )
+        self._expiration_timestamp = pre_request_time - 10 + payload["expires_in"]
         self.access_token = payload["access_token"]
         if "refresh_token" in payload:
             self.refresh_token = payload["refresh_token"]
@@ -182,8 +175,7 @@ class BaseAuthorizer(object):
 
         """
         return (
-            self.access_token is not None
-            and time.time() < self._expiration_timestamp
+            self.access_token is not None and time.time() < self._expiration_timestamp
         )
 
     def revoke(self):
@@ -270,9 +262,7 @@ class Authorizer(BaseAuthorizer):
         if only_access or self.refresh_token is None:
             super(Authorizer, self).revoke()
         else:
-            self._authenticator.revoke_token(
-                self.refresh_token, "refresh_token"
-            )
+            self._authenticator.revoke_token(self.refresh_token, "refresh_token")
             self._clear_access_token()
             self.refresh_token = None
 
@@ -370,9 +360,7 @@ class ReadOnlyAuthorizer(Authorizer):
         additional_kwargs = {}
         if self._scopes:
             additional_kwargs["scope"] = " ".join(self._scopes)
-        self._request_token(
-            grant_type="client_credentials", **additional_kwargs
-        )
+        self._request_token(grant_type="client_credentials", **additional_kwargs)
 
 
 class ScriptAuthorizer(Authorizer):
@@ -417,9 +405,7 @@ class ScriptAuthorizer(Authorizer):
         additional_kwargs = {}
         if self._scopes:
             additional_kwargs["scope"] = " ".join(self._scopes)
-        two_factor_code = (
-            self._two_factor_callback and self._two_factor_callback()
-        )
+        two_factor_code = self._two_factor_callback and self._two_factor_callback()
         if two_factor_code:
             additional_kwargs["otp"] = two_factor_code
         self._request_token(

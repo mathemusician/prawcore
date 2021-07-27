@@ -66,16 +66,14 @@ def main():
         description = trophy["data"]["description"]
         print(
             "Original:",
-            trophy["data"]["name"]
-            + (f" ({description})" if description else ""),
+            trophy["data"]["name"] + (f" ({description})" if description else ""),
         )
 
     for trophy in data2["data"]["trophies"]:
         description = trophy["data"]["description"]
         print(
             "Cached:",
-            trophy["data"]["name"]
-            + (f" ({description})" if description else ""),
+            trophy["data"]["name"] + (f" ({description})" if description else ""),
         )
     print(
         "----\nCached == Original:",

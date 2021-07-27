@@ -14,8 +14,8 @@ from .conftest import (  # noqa F401
     REFRESH_TOKEN,
     REQUESTOR,
     TEMPORARY_GRANT_CODE,
-    two_factor_callback,
     USERNAME,
+    two_factor_callback,
 )
 
 
@@ -58,9 +58,7 @@ class AuthorizerTest(AuthorizerTestBase):
     def test_authorize__with_invalid_code(self):
         self.authentication.redirect_uri = REDIRECT_URI
         authorizer = prawcore.Authorizer(self.authentication)
-        with Betamax(REQUESTOR).use_cassette(
-            "Authorizer_authorize__with_invalid_code"
-        ):
+        with Betamax(REQUESTOR).use_cassette("Authorizer_authorize__with_invalid_code"):
             self.assertRaises(
                 prawcore.OAuthException, authorizer.authorize, "invalid code"
             )
@@ -148,9 +146,7 @@ class AuthorizerTest(AuthorizerTestBase):
         authorizer = prawcore.Authorizer(
             self.authentication, refresh_token="INVALID_TOKEN"
         )
-        with Betamax(REQUESTOR).use_cassette(
-            "Authorizer_refresh__with_invalid_token"
-        ):
+        with Betamax(REQUESTOR).use_cassette("Authorizer_refresh__with_invalid_token"):
             self.assertRaises(prawcore.ResponseException, authorizer.refresh)
             self.assertFalse(authorizer.is_valid())
 
@@ -236,9 +232,7 @@ class AuthorizerTest(AuthorizerTestBase):
 
 class DeviceIDAuthorizerTest(AuthorizerTestBase):
     def setUp(self):
-        self.authentication = prawcore.UntrustedAuthenticator(
-            REQUESTOR, CLIENT_ID
-        )
+        self.authentication = prawcore.UntrustedAuthenticator(REQUESTOR, CLIENT_ID)
 
     def test_initialize(self):
         authorizer = prawcore.DeviceIDAuthorizer(self.authentication)
@@ -269,9 +263,7 @@ class DeviceIDAuthorizerTest(AuthorizerTestBase):
             self.authentication,
             scopes=scope_list,
         )
-        with Betamax(REQUESTOR).use_cassette(
-            "DeviceIDAuthorizer_refresh__with_scopes"
-        ):
+        with Betamax(REQUESTOR).use_cassette("DeviceIDAuthorizer_refresh__with_scopes"):
             authorizer.refresh()
 
         self.assertIsNotNone(authorizer.access_token)
@@ -331,16 +323,12 @@ class ReadOnlyAuthorizerTest(AuthorizerTestBase):
 
     def test_refresh__with_scopes(self):
         scope_list = ["adsedit", "adsread", "creddits", "history"]
-        authorizer = prawcore.ReadOnlyAuthorizer(
-            self.authentication, scopes=scope_list
-        )
+        authorizer = prawcore.ReadOnlyAuthorizer(self.authentication, scopes=scope_list)
         self.assertIsNone(authorizer.access_token)
         self.assertIsNone(authorizer.scopes)
         self.assertFalse(authorizer.is_valid())
 
-        with Betamax(REQUESTOR).use_cassette(
-            "ReadOnlyAuthorizer_refresh__with_scopes"
-        ):
+        with Betamax(REQUESTOR).use_cassette("ReadOnlyAuthorizer_refresh__with_scopes"):
             authorizer.refresh()
 
         self.assertIsNotNone(authorizer.access_token)
@@ -360,9 +348,7 @@ class ScriptAuthorizerTest(AuthorizerTestBase):
         )
 
     def test_refresh(self):
-        authorizer = prawcore.ScriptAuthorizer(
-            self.authentication, USERNAME, PASSWORD
-        )
+        authorizer = prawcore.ScriptAuthorizer(self.authentication, USERNAME, PASSWORD)
         self.assertIsNone(authorizer.access_token)
         self.assertIsNone(authorizer.scopes)
         self.assertFalse(authorizer.is_valid())
@@ -403,9 +389,7 @@ class ScriptAuthorizerTest(AuthorizerTestBase):
         authorizer = prawcore.ScriptAuthorizer(
             self.authentication, USERNAME, PASSWORD, scopes=scope_list
         )
-        with Betamax(REQUESTOR).use_cassette(
-            "ScriptAuthorizer_refresh__with_scopes"
-        ):
+        with Betamax(REQUESTOR).use_cassette("ScriptAuthorizer_refresh__with_scopes"):
             authorizer.refresh()
 
         self.assertIsNotNone(authorizer.access_token)
