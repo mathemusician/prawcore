@@ -223,6 +223,11 @@ class Session(object):
         if retry_strategy_state is None:
             retry_strategy_state = self._retry_strategy_class()
 
+        get_text = False
+        if method == "RAW":
+            method = "GET"
+            get_text = True
+
         retry_strategy_state.sleep()
         self._log_request(data, method, params, url)
         response, saved_exception = self._make_request(
@@ -271,10 +276,14 @@ class Session(object):
         ), f"Unexpected status code: {response.status_code}"
         if response.headers.get("content-length") == "0":
             return ""
-        try:
-            return response.json()
-        except ValueError:
-            raise BadJSON(response)
+        
+        if get_text == True:
+            return response
+        else:    
+            try:
+                return response.json()
+            except ValueError:
+                raise BadJSON(response)
 
     def _set_header_callback(self):
         if not self._authorizer.is_valid() and hasattr(
